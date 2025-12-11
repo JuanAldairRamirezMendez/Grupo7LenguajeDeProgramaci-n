@@ -9,12 +9,13 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:ci": "rm -rf node_modules package-lock.json && npm install --omit=optional && npm run build",
+    "build:ci": "npm install --legacy-peer-deps && npm run build",
     "lint": "eslint .",
     "preview": "vite preview",
     "tailwind": "node ./node_modules/tailwindcss/cli.js -i ./src/index.css -o ./dist/output.css --watch"
   },
   "dependencies": {
+    "@rollup/rollup-win32-x64-msvc": "^4.53.3",
     "framer-motion": "^12.23.25",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

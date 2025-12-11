@@ -158,6 +158,12 @@ Si estás desplegando el frontend (carpeta `project/frontend`) en Render y ves e
 
 - **Alternativa robusta:** cambiar a `pnpm` o `yarn` para el builder del frontend, ya que manejan optionalDependencies de forma diferente. Puedo preparar los cambios para usar `pnpm` si lo prefieres.
 
+ - **Recomendación (pnpm):** si los problemas con `optionalDependencies` persisten, lo más robusto es usar `pnpm`. Render detecta `pnpm` automáticamente cuando encuentra `pnpm-lock.yaml` en el repo y usará `pnpm install` en el builder.
+
+  - Para usar `pnpm` en Render, genera el `pnpm-lock.yaml` localmente con `pnpm install` dentro de `project/frontend`, commitea el lockfile y en la UI de Render usa el **Build Command**: `pnpm install && pnpm run build` (o simplemente `pnpm run build`).
+
+  - He incluido una opción para generar y commitear el lockfile en el repo para que Render utilice pnpm automáticamente. Si quieres que lo haga por ti, puedo generarlo y pusharlo ahora.
+
 Notas:
 
 - Después de aplicar el Build Command en la UI de Render, selecciona "Clear cache and deploy" (o borra la caché desde la UI) para forzar una instalación limpia.
