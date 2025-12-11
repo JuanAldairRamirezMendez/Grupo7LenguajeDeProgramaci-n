@@ -32,8 +32,8 @@ services:
     env: static
     plan: free
     branch: main
-    # Limpia lockfile/node_modules antes de instalar para evitar bug de npm con optionalDependencies
-    buildCommand: "cd project/frontend && rm -rf node_modules package-lock.json || true && npm ci && npm run build"
+    # Limpia lockfile/node_modules antes de instalar y evita optionalDependencies problemáticos
+    buildCommand: "cd project/frontend && rm -rf node_modules package-lock.json || true && npm ci --no-optional && npm run build"
     publishPath: "project/frontend/dist"
     envVars:
       - key: VITE_API_URL
