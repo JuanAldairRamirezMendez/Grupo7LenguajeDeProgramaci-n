@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:ci": "rm -rf node_modules package-lock.json && npm install --omit=optional && npm run build",
     "lint": "eslint .",
     "preview": "vite preview",
     "tailwind": "node ./node_modules/tailwindcss/cli.js -i ./src/index.css -o ./dist/output.css --watch"

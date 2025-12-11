@@ -136,6 +136,33 @@ Write-Host "Health response: $($resp | ConvertTo-Json)"
 ```
 
 Si quieres que lo añada al repo y lo comite, dímelo y lo creo.
+ 
+---
+
+## Frontend build en Render (problemas comunes y comando recomendado)
+
+Si estás desplegando el frontend (carpeta `project/frontend`) en Render y ves errores como "Cannot find module '@rollup/rollup-linux-x64-gnu'" durante la fase de build, suele deberse a una dependencia opcional nativa de Rollup que falla en el entorno de build. Prueba estas opciones:
+
+- **Comando de build recomendado (UI de Render):** configura el **Build Command** del servicio que construye el frontend con:
+
+  ```powershell
+  rm -rf node_modules package-lock.json
+  npm run build:ci
+  ```
+
+  Esto fuerza una instalación limpia y evita que npm instale optionalDependencies problemáticos.
+
+- **Archivo `.npmrc`:** el repo incluye `project/frontend/.npmrc` con `optional=false` para indicarle a npm que no instale optionalDependencies durante la instalación en CI/Render.
+
+- **Node version:** asegúrate de que Render use la versión de Node indicada en `project/frontend/.nvmrc`. El build log muestra la versión usada (p.ej. `Node.js v20.19.6`). Si Render no soporta la versión exacta, ajusta `.nvmrc`/engines o selecciona otra versión compatible.
+
+- **Alternativa robusta:** cambiar a `pnpm` o `yarn` para el builder del frontend, ya que manejan optionalDependencies de forma diferente. Puedo preparar los cambios para usar `pnpm` si lo prefieres.
+
+Notas:
+
+- Después de aplicar el Build Command en la UI de Render, selecciona "Clear cache and deploy" (o borra la caché desde la UI) para forzar una instalación limpia.
+- Si prefieres que actualice el `render.yaml` para incluir ese Build Command automáticamente, dímelo y lo añado.
+
 
 ---
 
