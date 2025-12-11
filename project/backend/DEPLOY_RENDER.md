@@ -17,7 +17,7 @@ Si algo difiere, revisa la ruta del Dockerfile y la rama que usarás (recomendad
 - Opción recomendada: configurar `Root Directory` en Render a `project/backend` y dejar `Dockerfile` como `Dockerfile` (relativo a esa raíz).
 - Alternativa: dejar `Root Directory` vacío y poner `project/backend/Dockerfile` en **Dockerfile Path**.
 - Añadir Secrets: `DATABASE_URL`, `SECRET_KEY`, `ALGORITHM`, `ACCESS_TOKEN_EXPIRE_MINUTES`, `FRONTEND_URL`.
-- Ejecutar migraciones `alembic upgrade head` contra la base de datos de Render antes del primer tráfico.
+-- Ejecutar las migraciones / crear el esquema en la base de datos antes del primer tráfico. (Nota: en este repositorio las migraciones no se ejecutan automáticamente; se aplicarán manualmente usando DBeaver o herramientas equivalentes según la preferencia del equipo.)
 
 ---
 
@@ -67,34 +67,19 @@ Si vas a provisionar la base en Render, createla desde **New → PostgreSQL** y 
 
 ---
 
-## 4) Ejecutar migraciones
+## 4) Crear el esquema / aplicar migraciones (MANUAL)
 
-Recomendación: ejecutar `alembic upgrade head` *antes* de exponer la aplicación al tráfico.
+Esta guía asume que **tú** aplicarás el esquema en la base de datos manualmente (por ejemplo con DBeaver, pgAdmin o psql). No se ejecutan migraciones automáticas en el contenedor.
 
-### Opción A — Desde tu máquina (PowerShell)
+Pasos recomendados con DBeaver (o herramienta similar):
 
-1. Copia la `DATABASE_URL` desde los Secrets de Render.
-2. En tu máquina, desde la carpeta `project/backend` y con el virtualenv activado:
+1. Conéctate a la base de datos usando la `DATABASE_URL` proporcionada por Render.
+2. Ejecuta los scripts SQL necesarios para crear las tablas y constraints que tu aplicación necesita. Si prefieres, puedes inspeccionar los archivos en `project/backend/alembic/versions` para ver el SQL que corresponde a cada migración y aplicarlo manualmente.
+3. Verifica la existencia de la tabla `alembic_version` y, si la creas manualmente, inserta la versión actual del head si deseas llevar control de migraciones.
 
-```powershell
-cd 'C:\Users\aldai\Downloads\proyectos\descuentosRappi\project\backend'
-#$env:DATABASE_URL='postgresql://user:pass@host:5432/dbname'  # usa la URL real
-$env:DATABASE_URL='PASTE_AQUI_LA_DATABASE_URL'
-& '.\.venv\Scripts\python.exe' -m alembic upgrade head
-```
-
-### Opción B — Job manual en Render
-
-1. En Render → **New → Job** → crea un Job manual.
-2. Configura:
-   - Tipo: `Manual Job`
-   - Branch: `main`
-   - Command: `alembic upgrade head`
-   - Environment: Docker (misma imagen que el servicio)
-   - Proporciona los mismos Secrets.
-3. Ejecuta el Job (`Run Job`) para aplicar las migraciones.
-
-Nota: Si usas la imagen Docker creada aquí, hemos añadido un `entrypoint.sh` que intentará ejecutar `alembic upgrade head` automáticamente al arrancar el contenedor (si `DATABASE_URL` está definido en los env vars). Esto es útil para despliegues automáticos, pero recomendamos usar un Job manual la primera vez para controlar el proceso.
+Notas:
+- Si ya existen tablas parciales en la BD, revisa su estructura antes de aplicar cambios para evitar conflictos (p. ej. `DuplicateTableError`).
+- Hacer el proceso manualmente con DBeaver te da control para resolver incompatibilidades antes de poner el servicio en producción.
 ---
 
 ## 5) Verificar despliegue
