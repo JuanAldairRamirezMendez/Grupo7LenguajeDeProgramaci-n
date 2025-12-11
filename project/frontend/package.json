@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:ci": "npm install --legacy-peer-deps @rollup/rollup-linux-x64-gnu && npm run build",
+    "build:ci": "npm install -g pnpm && pnpm install && pnpm run build",
     "lint": "eslint .",
     "preview": "vite preview",
     "tailwind": "node ./node_modules/tailwindcss/cli.js -i ./src/index.css -o ./dist/output.css --watch"
