@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+
+# Environments
+.venv/
+venv/
+env/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+
+# dotenv files
+.env
+.env.*
+
+# Database files
+*.sqlite3
+*.db
+
+# Logs
+*.log
+
+# Coverage
+htmlcov/
+.coverage
+
+# Build
+build/
+dist/
+
+# Misc
+*.egg-info/
+
+# Avoid committing Alembic history compiled files
+alembic/versions/*.pyc
