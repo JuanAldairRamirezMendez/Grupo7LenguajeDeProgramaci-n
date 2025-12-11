@@ -32,8 +32,8 @@ services:
     env: static
     plan: free
     branch: main
-    # Limpia lockfile/node_modules antes de instalar y evita optionalDependencies problemáticos
-    buildCommand: "cd project/frontend && rm -rf node_modules package-lock.json || true && npm ci --no-optional && npm run build"
+    # Limpia node_modules y evita optionalDependencies problemáticos; funciona si Render ejecuta desde la raíz o desde project/frontend
+    buildCommand: "(cd project/frontend 2>/dev/null || true) && rm -rf node_modules || true && npm install --no-optional && npm run build"
     publishPath: "project/frontend/dist"
     envVars:
       - key: VITE_API_URL
