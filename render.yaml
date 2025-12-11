@@ -1,0 +1,36 @@
+# Render service manifest for project
+# This file configures a Docker-based Web Service for the backend located at project/backend
+# After pushing, create the service in Render (or Render will auto-detect if you connect the repo).
+
+services:
+  - type: web_service
+    name: descuentos-backend
+    env: docker
+    plan: starter
+    # Path to Dockerfile inside repository
+    dockerfilePath: project/backend/Dockerfile
+    # Branch to auto-deploy from
+    branch: juan
+    autoDeploy: true
+    # Health check path
+    healthCheckPath: /health
+    instanceCount: 1
+    envVars:
+      # Secrets: set the following in Render Dashboard under 'Environment' -> 'Secrets' or via the UI
+      - key: DATABASE_URL
+        fromSecret: DATABASE_URL
+      - key: SECRET_KEY
+        fromSecret: SECRET_KEY
+      - key: ALGORITHM
+        fromSecret: ALGORITHM
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        fromSecret: ACCESS_TOKEN_EXPIRE_MINUTES
+      - key: FRONTEND_URL
+        fromSecret: FRONTEND_URL
+
+# Notes:
+# - On Render, create the secrets named above (DATABASE_URL, SECRET_KEY, etc.).
+# - DATABASE_URL should be a production Postgres URL (e.g. postgresql://user:pass@host:5432/dbname) or a managed Postgres add-on.
+# - If you want to use Render Postgres, provision a database and use the provided connection string as DATABASE_URL.
+# - The Dockerfile in project/backend will be used to build the image.
+# - You can add additional services (e.g. worker) to this file if needed.
