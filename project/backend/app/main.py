@@ -20,7 +20,7 @@ ALLOWED_ORIGINS = [
 
 app = FastAPI(title="Rappi Discounts API")
 
-#CORS
+# CORS MUST BE ADDED FIRST (before other middleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
