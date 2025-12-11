@@ -1,6 +1,5 @@
 # Render service manifest for project
-# This file configures a Docker-based Web Service for the backend located at project/backend
-# After pushing, create the service in Render (or Render will auto-detect if you connect the repo).
+# This file configures services for the backend and the frontend (static) for Render.
 
 services:
   - type: web_service
@@ -10,7 +9,7 @@ services:
     # Path to Dockerfile inside repository
     dockerfilePath: project/backend/Dockerfile
     # Branch to auto-deploy from
-    branch: juan
+    branch: main
     autoDeploy: true
     # Health check path
     healthCheckPath: /health
@@ -28,9 +27,20 @@ services:
       - key: FRONTEND_URL
         fromSecret: FRONTEND_URL
 
+  - type: static
+    name: descuentos-frontend
+    env: static
+    plan: free
+    branch: main
+    # Limpia lockfile/node_modules antes de instalar para evitar bug de npm con optionalDependencies
+    buildCommand: "cd project/frontend && rm -rf node_modules package-lock.json || true && npm ci && npm run build"
+    publishPath: "project/frontend/dist"
+    envVars:
+      - key: VITE_API_URL
+        value: "https://descuentos-backend.onrender.com"
+
 # Notes:
 # - On Render, create the secrets named above (DATABASE_URL, SECRET_KEY, etc.).
 # - DATABASE_URL should be a production Postgres URL (e.g. postgresql://user:pass@host:5432/dbname) or a managed Postgres add-on.
 # - If you want to use Render Postgres, provision a database and use the provided connection string as DATABASE_URL.
-# - The Dockerfile in project/backend will be used to build the image.
-# - You can add additional services (e.g. worker) to this file if needed.
+# - The Dockerfile in project/backend will be used to build the backend image.
