@@ -7,6 +7,10 @@ from sqlalchemy import engine_from_config
 from sqlalchemy.ext.asyncio import create_async_engine
 from alembic import context
 import os
+# importa tus módulos de modelos aquí para que target_metadata los vea
+import app.models.user
+import app.models.discount
+import app.models.role
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
