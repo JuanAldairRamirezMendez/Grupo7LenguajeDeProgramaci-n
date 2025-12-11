@@ -5,13 +5,16 @@ from sqlalchemy.exc import IntegrityError
 from app.database import get_db
 from app.models.user import User
 from app.models.role import Role
-from app.schemas.user import UserCreate, UserOut, Token
+from app.schemas.user import UserCreate, UserOut, Token, UserUpdate, ProfileOut
 from passlib.context import CryptContext
-from jose import jwt
+from jose import jwt, JWTError
 from datetime import datetime, timedelta
 from app.config import settings
+from fastapi.security import HTTPBearer, HTTPAuthCredentials
 
 router = APIRouter()
+
+security = HTTPBearer()
 
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 SECRET_KEY = settings.SECRET_KEY
@@ -77,3 +80,45 @@ async def login(form_data: UserCreate, db: AsyncSession = Depends(get_db)):
 
     access_token = create_access_token({"sub": str(user.id), "email": user.email})
     return {"access_token": access_token, "token_type": "bearer"}
+
+# Helper function to get current user from token
+async def get_current_user(credentials: HTTPAuthCredentials = Depends(security), db: AsyncSession = Depends(get_db)) -> User:
+    token = credentials.credentials
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: str = payload.get("sub")
+        if user_id is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+    except JWTError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+    
+    q = await db.execute(select(User).where(User.id == int(user_id)))
+    user = q.scalar_one_or_none()
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
+    return user
+
+# Get profile
+@router.get('/me', response_model=ProfileOut)
+async def get_profile(current_user: User = Depends(get_current_user)):
+    return current_user
+
+# Update profile
+@router.put('/me', response_model=ProfileOut)
+async def update_profile(update_data: UserUpdate, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    if update_data.full_name is not None:
+        current_user.full_name = update_data.full_name
+    if update_data.phone is not None:
+        current_user.phone = update_data.phone
+    
+    db.add(current_user)
+    await db.commit()
+    await db.refresh(current_user)
+    return current_user
+
+# Delete account
+@router.delete('/me')
+async def delete_account(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    await db.delete(current_user)
+    await db.commit()
+    return {"detail": "Account deleted successfully"}

@@ -67,3 +67,73 @@ export const isAuthenticated = () => {
 export const isAdmin = () => {
   return getRole() === "admin";
 };
+
+export const getProfile = async () => {
+  const token = getToken();
+  if (!token) {
+    throw new Error("No token found");
+  }
+
+  const response = await fetch(`${API_URL}/auth/me`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || "Error al obtener perfil");
+  }
+
+  return await response.json();
+};
+
+export const updateProfile = async (full_name, phone) => {
+  const token = getToken();
+  if (!token) {
+    throw new Error("No token found");
+  }
+
+  const response = await fetch(`${API_URL}/auth/me`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      full_name,
+      phone,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || "Error al actualizar perfil");
+  }
+
+  return await response.json();
+};
+
+export const deleteAccount = async () => {
+  const token = getToken();
+  if (!token) {
+    throw new Error("No token found");
+  }
+
+  const response = await fetch(`${API_URL}/auth/me`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || "Error al eliminar cuenta");
+  }
+
+  return await response.json();
+};

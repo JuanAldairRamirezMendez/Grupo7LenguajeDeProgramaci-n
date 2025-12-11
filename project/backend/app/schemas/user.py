@@ -4,12 +4,22 @@ from datetime import datetime
 class UserBase(BaseModel):
     email: str
     phone: str | None = None
+    full_name: str | None = None
 
 class UserCreate(UserBase):
     password: str
     role_id: int | None = None
 
 class UserOut(UserBase):
+    id: int
+    role_id: int
+    created_at: datetime
+
+class UserUpdate(BaseModel):
+    full_name: str | None = None
+    phone: str | None = None
+
+class ProfileOut(UserBase):
     id: int
     role_id: int
     created_at: datetime
