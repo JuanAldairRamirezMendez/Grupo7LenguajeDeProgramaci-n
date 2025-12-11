@@ -113,8 +113,6 @@ async def get_profile(current_user: User = Depends(get_current_user)):
 # Update profile
 @router.put('/me', response_model=ProfileOut)
 async def update_profile(update_data: UserUpdate, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    if update_data.full_name is not None:
-        current_user.full_name = update_data.full_name
     if update_data.phone is not None:
         current_user.phone = update_data.phone
     

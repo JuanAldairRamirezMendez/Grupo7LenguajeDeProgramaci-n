@@ -4,7 +4,6 @@ from datetime import datetime
 class UserBase(BaseModel):
     email: str
     phone: str | None = None
-    full_name: str | None = None
 
 class UserCreate(UserBase):
     password: str
@@ -16,7 +15,6 @@ class UserOut(UserBase):
     created_at: datetime
 
 class UserUpdate(BaseModel):
-    full_name: str | None = None
     phone: str | None = None
 
 class ProfileOut(UserBase):

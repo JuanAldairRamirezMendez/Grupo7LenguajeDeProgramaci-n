@@ -11,7 +11,6 @@ class User(Base):
     password_hash = Column(Text, nullable=False)
     role_id = Column(Integer, ForeignKey("roles.id"), nullable=False)
     phone = Column(String(20))
-    full_name = Column(String(255))
     device_token = Column(Text)
     created_at = Column(TIMESTAMP, default=datetime.utcnow)
     last_login = Column(TIMESTAMP)

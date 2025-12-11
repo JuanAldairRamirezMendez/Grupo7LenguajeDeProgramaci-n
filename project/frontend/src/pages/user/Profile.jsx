@@ -10,7 +10,6 @@ export default function Profile() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [formData, setFormData] = useState({
-    full_name: "",
     phone: "",
   });
   const [isDarkMode, setIsDarkMode] = useState(
@@ -27,7 +26,6 @@ export default function Profile() {
       const data = await authService.getProfile();
       setProfile(data);
       setFormData({
-        full_name: data.full_name || "",
         phone: data.phone || "",
       });
     } catch (err) {
@@ -51,7 +49,6 @@ export default function Profile() {
       setError("");
       setSuccess("");
       const updated = await authService.updateProfile(
-        formData.full_name,
         formData.phone
       );
       setProfile(updated);
@@ -152,23 +149,13 @@ export default function Profile() {
             <div className="px-6 py-8">
               {!editing ? (
                 <div className="space-y-6">
-                  {/* Email */}
+                  {/* Full Name */}
                   <div>
                     <label className={`block text-sm font-medium ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}>
                       Correo Electrónico
                     </label>
                     <p className={`mt-1 text-lg ${isDarkMode ? "text-white" : "text-gray-900"}`}>
                       {profile.email}
-                    </p>
-                  </div>
-
-                  {/* Full Name */}
-                  <div>
-                    <label className={`block text-sm font-medium ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}>
-                      Nombre Completo
-                    </label>
-                    <p className={`mt-1 text-lg ${isDarkMode ? "text-gray-200" : "text-gray-600"}`}>
-                      {profile.full_name || "No especificado"}
                     </p>
                   </div>
 
@@ -200,21 +187,6 @@ export default function Profile() {
                 </div>
               ) : (
                 <form onSubmit={handleUpdateProfile} className="space-y-6">
-                  {/* Full Name Input */}
-                  <div>
-                    <label className={`block text-sm font-medium ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}>
-                      Nombre Completo
-                    </label>
-                    <input
-                      type="text"
-                      name="full_name"
-                      value={formData.full_name}
-                      onChange={handleInputChange}
-                      className={`mt-1 block w-full rounded-lg border ${isDarkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300 text-gray-900"} shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2`}
-                      placeholder="Tu nombre"
-                    />
-                  </div>
-
                   {/* Phone Input */}
                   <div>
                     <label className={`block text-sm font-medium ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}>

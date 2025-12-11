@@ -90,7 +90,7 @@ export const getProfile = async () => {
   return await response.json();
 };
 
-export const updateProfile = async (full_name, phone) => {
+export const updateProfile = async (phone) => {
   const token = getToken();
   if (!token) {
     throw new Error("No token found");
@@ -103,7 +103,6 @@ export const updateProfile = async (full_name, phone) => {
       "Authorization": `Bearer ${token}`,
     },
     body: JSON.stringify({
-      full_name,
       phone,
     }),
   });
