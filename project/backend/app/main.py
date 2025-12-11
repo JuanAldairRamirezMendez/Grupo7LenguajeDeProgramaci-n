@@ -7,7 +7,14 @@ import traceback
 
 #Configuración básica desde settings
 FRONTEND_URL = settings.FRONTEND_URL
-ALLOWED_ORIGINS = [FRONTEND_URL, "http://localhost:8000", "http://127.0.0.1:8000"]
+ALLOWED_ORIGINS = [
+    FRONTEND_URL, 
+    "http://localhost:3007",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:8000", 
+    "http://127.0.0.1:8000"
+]
 
 app = FastAPI(title="Rappi Discounts API")
 

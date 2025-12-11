@@ -1,10 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [dark, setDark] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   // ✅ Al cargar, detectar si ya está en modo oscuro
@@ -19,13 +23,47 @@ const Login = () => {
     setDark(!dark);
   };
 
-  const login = () => {
-    if (email === "admin@rappi.com" && password === "admin123") {
-      localStorage.setItem("rol", "admin");
-      navigate("/admin");
-    } else {
-      localStorage.setItem("rol", "user");
-      navigate("/user");
+  const login = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.detail || "Error al iniciar sesión");
+      }
+
+      const data = await response.json();
+      const token = data.access_token;
+
+      // Guardar token
+      localStorage.setItem("token", token);
+      localStorage.setItem("email", email);
+
+      // Determinar si es admin (por ahora, verificar por email)
+      if (email === "admin@gmail.com") {
+        localStorage.setItem("rol", "admin");
+        navigate("/admin");
+      } else {
+        localStorage.setItem("rol", "user");
+        navigate("/user");
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -45,25 +83,46 @@ const Login = () => {
           Iniciar Sesión
         </h2>
 
-        <input
-          className="w-full mb-4 p-3 border rounded-lg bg-white dark:bg-gray-700 dark:text-white"
-          placeholder="Correo"
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        {error && (
+          <div className="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 p-3 rounded mb-4">
+            {error}
+          </div>
+        )}
 
-        <input
-          type="password"
-          className="w-full mb-6 p-3 border rounded-lg bg-white dark:bg-gray-700 dark:text-white"
-          placeholder="Contraseña"
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <form onSubmit={login}>
+          <input
+            className="w-full mb-4 p-3 border rounded-lg bg-white dark:bg-gray-700 dark:text-white"
+            placeholder="Correo"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
 
-        <button
-          onClick={login}
-          className="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition"
-        >
-          Entrar
-        </button>
+          <input
+            type="password"
+            className="w-full mb-6 p-3 border rounded-lg bg-white dark:bg-gray-700 dark:text-white"
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition disabled:opacity-50"
+          >
+            {loading ? "Entrando..." : "Entrar"}
+          </button>
+        </form>
+
+        <p className="text-sm text-center mt-4">
+          ¿No tienes cuenta?{" "}
+          <a href="/register" className="text-red-600 dark:text-red-400 font-semibold hover:underline">
+            Regístrate aquí
+          </a>
+        </p>
       </div>
     </div>
   );
