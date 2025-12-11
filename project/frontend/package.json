@@ -12,9 +12,11 @@
     "build:ci": "npm install && npm run build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "start": "node server.js",
     "tailwind": "node ./node_modules/tailwindcss/cli.js -i ./src/index.css -o ./dist/output.css --watch"
   },
   "dependencies": {
+    "express": "^5.2.1",
     "framer-motion": "^12.23.25",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
