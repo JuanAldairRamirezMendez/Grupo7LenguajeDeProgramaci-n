@@ -1,16 +1,12 @@
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from dotenv import load_dotenv
-import os
+from app.config import settings
 import time
 import traceback
 
-#Carga .env (solo en desarrollo)
-load_dotenv()
-
-#Configuración básica desde env
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3007")
+#Configuración básica desde settings
+FRONTEND_URL = settings.FRONTEND_URL
 ALLOWED_ORIGINS = [FRONTEND_URL, "http://localhost:8000", "http://127.0.0.1:8000"]
 
 app = FastAPI(title="Rappi Discounts API")
@@ -52,8 +48,18 @@ import importlib
 importlib.import_module("app.models")  # ensure all SQLAlchemy models are imported and registered
 from app.routers import auth
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
+from app.routers import discounts
+app.include_router(discounts.router)
 
 # otros routers los añadiremos cuando estén listos
+
+# Metrics (simple en memoria)
+from app.services.metrics_service import metrics
+
+
+@app.get("/metrics", tags=["metrics"])
+def get_metrics():
+    return metrics.get_metrics()
 
 @app.get("/health", tags=["health"])
 def health():
@@ -63,7 +69,7 @@ def health():
 @app.on_event("startup")
 async def on_startup():
     #inicializar conexión a DB, cachés, etc.
-    db_url = os.getenv("DATABASE_URL")
+    db_url = settings.DATABASE_URL
     print("Startup: DATABASE_URL =", "[hidden]" if db_url else "not set")
     #Si usas SQLAlchemy, aquí creas engine / sessionmaker o pruebas conexión
 

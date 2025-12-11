@@ -7,7 +7,7 @@ class DiscountBase(BaseModel):
     expiration_date: date | None = None
 
 class DiscountCreate(DiscountBase):
-    pass
+    created_by: int | None = None
 
 class DiscountOut(DiscountBase):
     id: int

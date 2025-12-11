@@ -1,18 +1,15 @@
 from ssl import create_default_context
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import declarative_base
-import os
-from dotenv import load_dotenv
+from app.config import settings
 
-#crear un contexto SSL por seguridad
+# crear un contexto SSL por seguridad
 ssl_context = create_default_context()
-# Cargar variables desde .env para desarrollo/local
-load_dotenv()
 
 Base = declarative_base()
 
-# Lee DATABASE_URL desde env (.env cargado por main.py / python-dotenv)
-DATABASE_URL = os.getenv("DATABASE_URL")
+# Read DATABASE_URL from centralized settings
+DATABASE_URL = settings.DATABASE_URL
 
 if not DATABASE_URL:
     raise RuntimeError(
@@ -21,7 +18,12 @@ if not DATABASE_URL:
     )
 
 # Crea engine async
-engine = create_async_engine(DATABASE_URL, future=True, echo=False)
+engine = create_async_engine(
+    DATABASE_URL,
+    future=True,
+    echo=False,
+    connect_args={"ssl": ssl_context},
+)
 
 # Async session factory
 AsyncSessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
@@ -37,10 +39,3 @@ async def init_db():
     async with engine.begin() as conn:
         # run_sync ejecuta funciones síncronas con la conexión async
         await conn.run_sync(Base.metadata.create_all)
-
-engine = create_async_engine(
-    DATABASE_URL,
-    future=True,
-    echo=False,
-    connect_args={"ssl": ssl_context}
-)
