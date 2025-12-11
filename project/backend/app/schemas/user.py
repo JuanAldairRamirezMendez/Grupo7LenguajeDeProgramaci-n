@@ -7,7 +7,7 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
-    role_id: int
+    role_id: int | None = None
 
 class UserOut(UserBase):
     id: int
@@ -17,3 +17,8 @@ class UserOut(UserBase):
 
     class Config:
         orm_mode = True
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"

@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 import os
 import time
+import traceback
 
 #Carga .env (solo en desarrollo)
 load_dotenv()
@@ -40,13 +41,19 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 @app.exception_handler(Exception)
 async def general_exception_handler(request: Request, exc: Exception):
     #Aquí puedes mejorar el logging y enviar a un sistema de errores
+    # Print traceback to console for debugging (development only)
+    print("Unhandled exception:", repr(exc))
+    traceback.print_exc()
     return JSONResponse(status_code=500, content={"detail": "Internal Server error"})
 
 # Routers (registra los routers reales cuando existan)
-# from app.routers import auth, users, discounts
-# app.include_router(auth.router, prefix="/auth", tags=["auth"])
-# app.include_router(users.router, prefix="/users", tags=["users"])
-# app.include_router(discounts.router, prefix="/discounts", tags=["discounts"])
+# Import models via importlib so we don't overwrite the `app` FastAPI variable
+import importlib
+importlib.import_module("app.models")  # ensure all SQLAlchemy models are imported and registered
+from app.routers import auth
+app.include_router(auth.router, prefix="/auth", tags=["auth"])
+
+# otros routers los añadiremos cuando estén listos
 
 @app.get("/health", tags=["health"])
 def health():
