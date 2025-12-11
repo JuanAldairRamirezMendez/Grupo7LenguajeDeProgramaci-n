@@ -94,6 +94,7 @@ $env:DATABASE_URL='PASTE_AQUI_LA_DATABASE_URL'
    - Proporciona los mismos Secrets.
 3. Ejecuta el Job (`Run Job`) para aplicar las migraciones.
 
+Nota: Si usas la imagen Docker creada aquí, hemos añadido un `entrypoint.sh` que intentará ejecutar `alembic upgrade head` automáticamente al arrancar el contenedor (si `DATABASE_URL` está definido en los env vars). Esto es útil para despliegues automáticos, pero recomendamos usar un Job manual la primera vez para controlar el proceso.
 ---
 
 ## 5) Verificar despliegue

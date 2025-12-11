@@ -14,8 +14,12 @@ RUN pip install --no-cache-dir -r /app/requirements.txt
 # Copy application
 COPY . /app
 
+# Copy entrypoint that will run migrations then start the server
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
-# Use gunicorn with uvicorn workers for production
-CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "app.main:app", "-b", "0.0.0.0:$PORT"]
+# Entrypoint: ejecuta migraciones y arranca Gunicorn
+ENTRYPOINT ["/app/entrypoint.sh"]
