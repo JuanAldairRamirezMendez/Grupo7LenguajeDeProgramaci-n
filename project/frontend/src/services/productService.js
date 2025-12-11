@@ -16,7 +16,7 @@ export const getProductos = () => {
       nombre: "Pollo Broaster",
       descuento: "20%",
       tienda: "KFC",
-      url: "https://www.kfc.com",
+      url: "https://www.kfc.com.pe",
     },
   ]);
 };
