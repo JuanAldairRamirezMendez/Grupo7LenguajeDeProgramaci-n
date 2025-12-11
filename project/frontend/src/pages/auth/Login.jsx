@@ -64,6 +64,14 @@ const Login = () => {
         >
           Entrar
         </button>
+
+        <p className="text-center mt-4 text-gray-600 dark:text-gray-300">
+          ¿No tienes una cuenta?
+          <a href="/register" className="text-blue-600 dark:text-blue-400 font-semibold ml-1">
+            Regístrate aquí
+          </a>
+        </p>
+
       </div>
     </div>
   );
