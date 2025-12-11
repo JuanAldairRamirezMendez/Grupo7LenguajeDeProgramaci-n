@@ -11,8 +11,8 @@ const PORT = process.env.PORT || 5173;
 // Servir archivos estáticos desde el directorio dist
 app.use(express.static(path.join(__dirname, 'dist')));
 
-// Ruta catch-all para servir index.html (SPA)
-app.get('/*', (req, res) => {
+// Middleware catch-all para servir index.html (SPA)
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
